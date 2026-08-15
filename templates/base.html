@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="OpsWatch IT Infrastructure Monitoring and Incident Management Platform"
+    >
+
+    <title>
+        {% block title %}OpsWatch{% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/static/css/style.css"
+    >
+
+</head>
+
+
+<body>
+
+<div class="layout">
+
+
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
+    <aside class="sidebar">
+
+        <!-- Brand -->
+
+        <div class="brand">
+
+            <div class="brand-icon">
+
+                <span>◉</span>
+
+            </div>
+
+
+            <div class="brand-text">
+
+                <h1>
+                    OpsWatch
+                </h1>
+
+                <span>
+                    Infrastructure Operations
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- Navigation -->
+
+        <div class="nav-section">
+
+            <div class="nav-label">
+                OPERATIONS
+            </div>
+
+
+            <nav>
+
+                <a
+                    href="/"
+                    class="{% if request.url.path == '/' %}active{% endif %}"
+                >
+
+                    <span class="nav-icon">
+                        ▦
+                    </span>
+
+                    <span>
+                        Overview
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="/incidents"
+                    class="{% if request.url.path == '/incidents' %}active{% endif %}"
+                >
+
+                    <span class="nav-icon">
+                        !
+                    </span>
+
+                    <span>
+                        Incidents
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="/services"
+                    class="{% if request.url.path == '/services' %}active{% endif %}"
+                >
+
+                    <span class="nav-icon">
+                        ◈
+                    </span>
+
+                    <span>
+                        Services
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="/metrics"
+                    class="{% if request.url.path == '/metrics' %}active{% endif %}"
+                >
+
+                    <span class="nav-icon">
+                        ◒
+                    </span>
+
+                    <span>
+                        Metrics
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="/reports"
+                    class="{% if request.url.path == '/reports' %}active{% endif %}"
+                >
+
+                    <span class="nav-icon">
+                        ▤
+                    </span>
+
+                    <span>
+                        Reports
+                    </span>
+
+                </a>
+
+            </nav>
+
+        </div>
+
+
+        <!-- System Status -->
+
+        <div class="sidebar-footer">
+
+            <div class="system-status">
+
+                <div class="status-indicator">
+
+                    <span class="status-dot"></span>
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        Monitoring Active
+                    </strong>
+
+                    <span>
+                        System operational
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="sidebar-version">
+
+                OpsWatch v1.0.0
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN APPLICATION
+         ===================================================== -->
+
+    <main class="main">
+
+
+        <!-- Top Header -->
+
+        <header class="topbar">
+
+            <div class="breadcrumb">
+
+                <span>
+                    IT Operations
+                </span>
+
+                <span class="breadcrumb-separator">
+                    /
+                </span>
+
+                <strong>
+
+                    {% if request.url.path == '/' %}
+                        Overview
+
+                    {% elif request.url.path == '/incidents' %}
+                        Incidents
+
+                    {% elif request.url.path == '/services' %}
+                        Services
+
+                    {% elif request.url.path == '/metrics' %}
+                        Metrics
+
+                    {% elif request.url.path == '/reports' %}
+                        Reports
+
+                    {% else %}
+                        OpsWatch
+                    {% endif %}
+
+                </strong>
+
+            </div>
+
+
+            <div class="topbar-status">
+
+                <span class="live-indicator"></span>
+
+                <span>
+                    LIVE
+                </span>
+
+            </div>
+
+        </header>
+
+
+        <!-- Page Content -->
+
+        <div class="page-content">
+
+            {% block content %}
+
+            {% endblock %}
+
+        </div>
+
+
+    </main>
+
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+     ===================================================== -->
+
+<script
+    src="/static/js/dashboard.js">
+</script>
+
+
+</body>
+
+</html>

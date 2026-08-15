@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<header class="page-header">
+
+    <div>
+        <h2>Service Monitoring</h2>
+
+        <p>
+            Monitor availability and response performance
+            of critical services.
+        </p>
+    </div>
+
+    <button
+        class="refresh-button"
+        onclick="checkAllServices()">
+
+        Check All Services
+
+    </button>
+
+</header>
+
+
+<section class="metric-grid">
+
+    <div class="metric-card">
+
+        <span>Total Services</span>
+
+        <strong>
+            {{ services|length }}
+        </strong>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span>Operational</span>
+
+        <strong class="healthy">
+
+            {{ services
+                |selectattr("status", "equalto", "UP")
+                |list
+                |length }}
+
+        </strong>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span>Degraded</span>
+
+        <strong>
+
+            {{ services
+                |selectattr("status", "equalto", "DEGRADED")
+                |list
+                |length }}
+
+        </strong>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span>Offline</span>
+
+        <strong>
+
+            {{ services
+                |selectattr("status", "equalto", "DOWN")
+                |list
+                |length }}
+
+        </strong>
+
+    </div>
+
+</section>
+
+
+<section class="panel service-panel">
+
+    <div class="panel-header">
+
+        <h3>
+            Monitored Services
+        </h3>
+
+        <span>
+            {{ services|length }} configured
+        </span>
+
+    </div>
+
+
+    <div class="service-list">
+
+        {% for service in services %}
+
+        <div class="service-row">
+
+            <div class="service-info">
+
+                <div class="service-icon">
+                    ◉
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ service.name }}
+                    </strong>
+
+                    <p>
+                        {{ service.url }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="service-response">
+
+                {% if service.last_checked %}
+
+                    {{ "%.0f"|format(
+                        service.response_time
+                    ) }} ms
+
+                {% else %}
+
+                    --
+
+                {% endif %}
+
+            </div>
+
+
+            <div>
+
+                {% if service.status == "UP" %}
+
+                    <span class="service-status up">
+                        ● UP
+                    </span>
+
+                {% elif service.status == "DEGRADED" %}
+
+                    <span class="service-status degraded">
+                        ● DEGRADED
+                    </span>
+
+                {% elif service.status == "DOWN" %}
+
+                    <span class="service-status down">
+                        ● DOWN
+                    </span>
+
+                {% else %}
+
+                    <span class="service-status unknown">
+                        ● UNKNOWN
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+
+            <div>
+
+                <button
+                    class="check-button"
+                    onclick="checkService({{ service.id }})">
+
+                    Check
+
+                </button>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endblock %}

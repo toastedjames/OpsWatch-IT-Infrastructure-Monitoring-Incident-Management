@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<header class="page-header">
+
+    <div>
+        <h2>Incident Management</h2>
+
+        <p>
+            Monitor, investigate, and resolve infrastructure incidents.
+        </p>
+    </div>
+
+    <button
+        class="refresh-button"
+        onclick="window.location.reload()">
+
+        Refresh
+
+    </button>
+
+</header>
+
+
+<!-- SUMMARY -->
+
+<section class="metric-grid">
+
+    <div class="metric-card">
+        <span>Total Incidents</span>
+
+        <strong id="totalIncidents">
+            {{ incidents|length }}
+        </strong>
+    </div>
+
+
+    <div class="metric-card">
+        <span>Critical</span>
+
+        <strong id="criticalIncidents">
+            {{ incidents
+                |selectattr("severity", "equalto", "CRITICAL")
+                |list
+                |length }}
+        </strong>
+    </div>
+
+
+    <div class="metric-card">
+        <span>High</span>
+
+        <strong id="highIncidents">
+            {{ incidents
+                |selectattr("severity", "equalto", "HIGH")
+                |list
+                |length }}
+        </strong>
+    </div>
+
+
+    <div class="metric-card">
+        <span>Open</span>
+
+        <strong id="openIncidents">
+            {{ incidents
+                |selectattr("status", "equalto", "OPEN")
+                |list
+                |length }}
+        </strong>
+    </div>
+
+</section>
+
+<section class="simulation-panel">
+
+    <div class="simulation-header">
+
+        <div>
+
+            <h3>
+                Incident Simulation Console
+            </h3>
+
+            <p>
+                Generate controlled operational events
+                for monitoring and testing.
+            </p>
+
+        </div>
+
+        <span class="simulation-badge">
+            TEST MODE
+        </span>
+
+    </div>
+
+
+    <div class="simulation-grid">
+
+        <button
+            onclick="simulateIncident('cpu')">
+
+            🔥 High CPU
+
+        </button>
+
+
+        <button
+            onclick="simulateIncident('memory')">
+
+            🧠 Memory Exhaustion
+
+        </button>
+
+
+        <button
+            onclick="simulateIncident('disk')">
+
+            💾 Disk Capacity
+
+        </button>
+
+
+        <button
+            onclick="simulateIncident('service')">
+
+            🔌 Service Unavailable
+
+        </button>
+
+
+        <button
+            onclick="simulateIncident('performance')">
+
+            ⚡ Slow Response
+
+        </button>
+
+
+        <button
+            onclick="simulateIncident('ssl')">
+
+            🔐 SSL Expiry
+
+        </button>
+
+
+        <button
+            onclick="simulateIncident('security')">
+
+            🛡 Security Alert
+
+        </button>
+
+
+        <button
+            onclick="simulateIncident('recovery')">
+
+            🟢 Service Recovery
+
+        </button>
+
+    </div>
+
+</section>
+
+<!-- FILTERS -->
+
+<section class="panel incident-panel">
+
+    <div class="filter-bar">
+
+        <input
+            type="text"
+            id="incidentSearch"
+            placeholder="Search incidents..."
+            oninput="filterIncidents()"
+        >
+
+
+        <select
+            id="severityFilter"
+            onchange="filterIncidents()">
+
+            <option value="ALL">
+                All Severity
+            </option>
+
+            <option value="CRITICAL">
+                Critical
+            </option>
+
+            <option value="HIGH">
+                High
+            </option>
+
+            <option value="MEDIUM">
+                Medium
+            </option>
+
+            <option value="LOW">
+                Low
+            </option>
+
+        </select>
+
+
+        <select
+            id="statusFilter"
+            onchange="filterIncidents()">
+
+            <option value="ALL">
+                All Status
+            </option>
+
+            <option value="OPEN">
+                Open
+            </option>
+
+            <option value="RESOLVED">
+                Resolved
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- INCIDENT TABLE -->
+
+    <div class="table-wrapper">
+
+        <table class="incident-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Incident</th>
+
+                    <th>Severity</th>
+
+                    <th>Description</th>
+
+                    <th>Detected</th>
+
+                    <th>Status</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="incidentTableBody">
+
+                {% for incident in incidents %}
+
+                <tr
+                    data-severity="{{ incident.severity }}"
+                    data-status="{{ incident.status }}"
+                >
+
+                    <td>
+                        #{{ incident.id }}
+                    </td>
+
+
+                    <td>
+
+                        <strong>
+                            {{ incident.incident_type }}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+
+                        <span
+                            class="severity {{ incident.severity|lower }}">
+
+                            {{ incident.severity }}
+
+                        </span>
+
+                    </td>
+
+
+                    <td class="description-cell">
+
+                        {{ incident.description }}
+
+                    </td>
+
+
+                    <td>
+
+                        {{ incident.detected_at.strftime(
+                            "%b %d, %Y %H:%M"
+                        ) }}
+
+                    </td>
+
+
+                    <td>
+
+                        <span
+                            class="incident-status
+                            {% if incident.status == 'OPEN' %}
+                                status-open
+                            {% else %}
+                                status-resolved
+                            {% endif %}">
+
+                            {{ incident.status }}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        {% if incident.status == "OPEN" %}
+
+                        <button
+                            class="resolve-button"
+                            onclick="resolveIncident(
+                                {{ incident.id }}
+                            )">
+
+                            Resolve
+
+                        </button>
+
+                        {% else %}
+
+                        <span class="resolved-label">
+                            Resolved
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+
+        {% if not incidents %}
+
+        <div class="empty">
+
+            <div class="empty-icon">
+                ✓
+            </div>
+
+            <strong>
+                No incidents detected
+            </strong>
+
+            <p>
+                All monitored systems are operating normally.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

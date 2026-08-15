@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<header class="page-header">
+
+    <div>
+        <h2>System Metrics</h2>
+
+        <p>
+            Historical performance data for monitored infrastructure.
+        </p>
+    </div>
+
+    <button
+        class="refresh-button"
+        onclick="collectMetrics()">
+
+        Collect Metrics
+
+    </button>
+
+</header>
+
+
+<section class="metric-grid">
+
+    <div class="metric-card">
+
+        <span>Latest CPU</span>
+
+        <strong>
+            {% if metrics %}
+                {{ "%.1f"|format(metrics[0].cpu_percent) }}%
+            {% else %}
+                --
+            {% endif %}
+        </strong>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span>Latest Memory</span>
+
+        <strong>
+            {% if metrics %}
+                {{ "%.1f"|format(metrics[0].memory_percent) }}%
+            {% else %}
+                --
+            {% endif %}
+        </strong>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span>Latest Disk</span>
+
+        <strong>
+            {% if metrics %}
+                {{ "%.1f"|format(metrics[0].disk_percent) }}%
+            {% else %}
+                --
+            {% endif %}
+        </strong>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span>Samples Collected</span>
+
+        <strong>
+            {{ metrics|length }}
+        </strong>
+
+    </div>
+
+</section>
+
+
+<section class="panel chart-panel">
+
+    <div class="panel-header">
+
+        <h3>
+            Infrastructure Performance
+        </h3>
+
+        <span>
+            Latest 100 samples
+        </span>
+
+    </div>
+
+    <div class="chart-container">
+
+        <canvas id="metricsChart"></canvas>
+
+    </div>
+
+</section>
+
+
+<section class="panel metrics-table-panel">
+
+    <div class="panel-header">
+
+        <h3>
+            Metric History
+        </h3>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table class="incident-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Timestamp</th>
+
+                    <th>CPU</th>
+
+                    <th>Memory</th>
+
+                    <th>Disk</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for metric in metrics %}
+
+                <tr>
+
+                    <td>
+                        {{ metric.timestamp.strftime(
+                            "%b %d, %Y %H:%M:%S"
+                        ) }}
+                    </td>
+
+                    <td>
+                        {{ "%.1f"|format(
+                            metric.cpu_percent
+                        ) }}%
+                    </td>
+
+                    <td>
+                        {{ "%.1f"|format(
+                            metric.memory_percent
+                        ) }}%
+                    </td>
+
+                    <td>
+                        {{ "%.1f"|format(
+                            metric.disk_percent
+                        ) }}%
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+
+const metricLabels = [
+    {% for metric in metrics|reverse %}
+        "{{ metric.timestamp.strftime('%H:%M:%S') }}",
+    {% endfor %}
+];
+
+
+const cpuData = [
+    {% for metric in metrics|reverse %}
+        {{ metric.cpu_percent }},
+    {% endfor %}
+];
+
+
+const memoryData = [
+    {% for metric in metrics|reverse %}
+        {{ metric.memory_percent }},
+    {% endfor %}
+];
+
+
+const diskData = [
+    {% for metric in metrics|reverse %}
+        {{ metric.disk_percent }},
+    {% endfor %}
+];
+
+
+const chartContext =
+    document
+        .getElementById("metricsChart")
+        .getContext("2d");
+
+
+new Chart(
+    chartContext,
+    {
+
+        type: "line",
+
+        data: {
+
+            labels: metricLabels,
+
+            datasets: [
+
+                {
+                    label: "CPU %",
+                    data: cpuData,
+                    tension: 0.3
+                },
+
+                {
+                    label: "Memory %",
+                    data: memoryData,
+                    tension: 0.3
+                },
+
+                {
+                    label: "Disk %",
+                    data: diskData,
+                    tension: 0.3
+                }
+
+            ]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true,
+
+                    max: 100,
+
+                    title: {
+
+                        display: true,
+
+                        text: "Utilization (%)"
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}

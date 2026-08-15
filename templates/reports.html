@@ -1,0 +1,380 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<header class="page-header">
+
+    <div>
+
+        <h2>
+            Operations Report
+        </h2>
+
+        <p>
+            Infrastructure health, incident activity,
+            and service performance summary.
+        </p>
+
+    </div>
+
+    <button
+        class="refresh-button"
+        onclick="window.location.reload()">
+
+        Refresh Report
+
+    </button>
+
+</header>
+
+
+<!-- =====================================================
+     INCIDENT SUMMARY
+     ===================================================== -->
+
+<section class="metric-grid">
+
+    <div class="metric-card">
+
+        <span>
+            Total Incidents
+        </span>
+
+        <strong>
+            {{ total_incidents }}
+        </strong>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span>
+            Open Incidents
+        </span>
+
+        <strong>
+            {{ open_incidents }}
+        </strong>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span>
+            Resolved Incidents
+        </span>
+
+        <strong class="healthy">
+            {{ resolved_incidents }}
+        </strong>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span>
+            Resolution Rate
+        </span>
+
+        <strong>
+
+            {% if total_incidents > 0 %}
+
+                {{ "%.1f"|format(
+                    (resolved_incidents / total_incidents) * 100
+                ) }}%
+
+            {% else %}
+
+                0%
+
+            {% endif %}
+
+        </strong>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     INCIDENT ANALYSIS
+     ===================================================== -->
+
+<section class="report-grid">
+
+
+    <div class="panel">
+
+        <div class="panel-header">
+
+            <h3>
+                Incident Severity
+            </h3>
+
+        </div>
+
+
+        <div class="severity-report">
+
+            <div class="severity-report-row">
+
+                <div>
+
+                    <span class="severity critical">
+                        CRITICAL
+                    </span>
+
+                </div>
+
+                <strong>
+                    {{ critical_count }}
+                </strong>
+
+            </div>
+
+
+            <div class="severity-report-row">
+
+                <div>
+
+                    <span class="severity high">
+                        HIGH
+                    </span>
+
+                </div>
+
+                <strong>
+                    {{ high_count }}
+                </strong>
+
+            </div>
+
+
+            <div class="severity-report-row">
+
+                <div>
+
+                    <span class="severity medium">
+                        MEDIUM
+                    </span>
+
+                </div>
+
+                <strong>
+                    {{ medium_count }}
+                </strong>
+
+            </div>
+
+
+            <div class="severity-report-row">
+
+                <div>
+
+                    <span class="severity low">
+                        LOW
+                    </span>
+
+                </div>
+
+                <strong>
+                    {{ low_count }}
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         SERVICE SUMMARY
+         ================================================= -->
+
+    <div class="panel">
+
+        <div class="panel-header">
+
+            <h3>
+                Service Availability
+            </h3>
+
+        </div>
+
+
+        <div class="service-report">
+
+            {% for service in services %}
+
+            <div class="service-report-row">
+
+                <div>
+
+                    <strong>
+                        {{ service.name }}
+                    </strong>
+
+                    <p>
+                        {{ service.url }}
+                    </p>
+
+                </div>
+
+
+                {% if service.status == "UP" %}
+
+                    <span class="service-status up">
+                        ● UP
+                    </span>
+
+                {% elif service.status == "DEGRADED" %}
+
+                    <span class="service-status degraded">
+                        ● DEGRADED
+                    </span>
+
+                {% elif service.status == "DOWN" %}
+
+                    <span class="service-status down">
+                        ● DOWN
+                    </span>
+
+                {% else %}
+
+                    <span class="service-status unknown">
+                        ● UNKNOWN
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+            {% else %}
+
+            <div class="empty">
+
+                No services configured.
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     RECENT ACTIVITY
+     ===================================================== -->
+
+<section class="panel report-activity">
+
+    <div class="panel-header">
+
+        <h3>
+            Recent Incident Activity
+        </h3>
+
+        <a href="/incidents">
+            View All
+        </a>
+
+    </div>
+
+
+    {% if recent_incidents %}
+
+        {% for incident in recent_incidents %}
+
+        <div class="activity-row">
+
+            <div class="activity-indicator
+                {{ incident.severity|lower }}">
+            </div>
+
+
+            <div class="activity-content">
+
+                <strong>
+                    {{ incident.incident_type }}
+                </strong>
+
+                <p>
+                    {{ incident.description }}
+                </p>
+
+            </div>
+
+
+            <div class="activity-meta">
+
+                <span
+                    class="severity {{ incident.severity|lower }}">
+
+                    {{ incident.severity }}
+
+                </span>
+
+
+                <small>
+
+                    {{ incident.detected_at.strftime(
+                        "%b %d, %H:%M"
+                    ) }}
+
+                </small>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+
+            No incident activity recorded.
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- =====================================================
+     REPORT FOOTER
+     ===================================================== -->
+
+<section class="report-footer">
+
+    <div>
+
+        <strong>
+            OpsWatch Operational Summary
+        </strong>
+
+        <p>
+            Report generated from current monitoring
+            and incident-management data.
+        </p>
+
+    </div>
+
+    <span>
+        Generated automatically
+    </span>
+
+</section>
+
+
+{% endblock %}

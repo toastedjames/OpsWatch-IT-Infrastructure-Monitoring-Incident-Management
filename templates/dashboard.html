@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<header class="page-header">
+
+    <div>
+
+        <h2>
+            Infrastructure Overview
+        </h2>
+
+        <p>
+            Real-time system health and operational status
+        </p>
+
+    </div>
+
+    <button
+        onclick="collectMetrics()"
+        class="refresh-button">
+
+        Collect Metrics
+
+    </button>
+
+</header>
+
+
+<section class="metric-grid">
+
+
+    <div class="metric-card">
+
+        <span>
+            CPU Utilization
+        </span>
+
+        <strong>
+
+            {% if metric %}
+                {{ "%.1f"|format(metric.cpu_percent) }}%
+            {% else %}
+                --
+            {% endif %}
+
+        </strong>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span>
+            Memory Utilization
+        </span>
+
+        <strong>
+
+            {% if metric %}
+                {{ "%.1f"|format(metric.memory_percent) }}%
+            {% else %}
+                --
+            {% endif %}
+
+        </strong>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span>
+            Disk Usage
+        </span>
+
+        <strong>
+
+            {% if metric %}
+                {{ "%.1f"|format(metric.disk_percent) }}%
+            {% else %}
+                --
+            {% endif %}
+
+        </strong>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <span>
+            System Status
+        </span>
+
+        <strong class="healthy">
+
+            ● Operational
+
+        </strong>
+
+    </div>
+
+
+</section>
+
+
+<section class="panel">
+
+    <div class="panel-header">
+
+        <h3>
+            Active Incidents
+        </h3>
+
+        <a href="/incidents">
+            View All
+        </a>
+
+    </div>
+
+
+    {% if incidents %}
+
+        {% for incident in incidents %}
+
+        <div class="incident-row">
+
+            <div>
+
+                <strong>
+                    {{ incident.incident_type }}
+                </strong>
+
+                <p>
+                    {{ incident.description }}
+                </p>
+
+            </div>
+
+
+            <span
+                class="severity {{ incident.severity|lower }}">
+
+                {{ incident.severity }}
+
+            </span>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="empty">
+
+            No active incidents.
+
+        </div>
+
+    {% endif %}
+
+
+</section>
+
+
+{% endblock %}
