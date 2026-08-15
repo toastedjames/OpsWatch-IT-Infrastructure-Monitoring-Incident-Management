@@ -336,13 +336,13 @@ The reports interface summarizes infrastructure and incident activity.
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/IT-Infrastructure-Monitor.git
+git clone https://github.com/toastedjames/OpsWatch-IT-Infrastructure-Monitor.git
 ```
 
 Navigate into the project:
 
 ```bash
-cd IT-Infrastructure-Monitor
+cd OpsWatch-IT-Infrastructure-Monitor
 ```
 
 ---
@@ -502,10 +502,6 @@ Potential future enhancements include:
 
 M.S. Electrical Engineering
 Virginia Tech
-
-GitHub: `YOUR_GITHUB_PROFILE`
-
-LinkedIn: `YOUR_LINKEDIN_PROFILE`
 
 ---
 
